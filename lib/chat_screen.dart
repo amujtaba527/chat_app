@@ -100,11 +100,19 @@ class ChatsScreen extends StatelessWidget {
               //   ],
               // ),
               
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Icon(Icons.message),
-                  Icon(Icons.person_outline),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.message),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/profile');
+                    },
+                    icon: const Icon(Icons.person_outline),
+                  ),
                 ],
               ),
             ),
