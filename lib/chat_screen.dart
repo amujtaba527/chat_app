@@ -31,7 +31,6 @@ class ChatsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
-
                       suffixIcon: Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
@@ -68,7 +67,6 @@ class ChatsScreen extends StatelessWidget {
                 },
               ),
             ),
-
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -99,7 +97,7 @@ class ChatsScreen extends StatelessWidget {
               //     ),
               //   ],
               // ),
-              
+
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -119,6 +117,15 @@ class ChatsScreen extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80.0, right: 8.0),
+        child: FloatingActionButton(
+          backgroundColor: Colors.black,
+          child: const Icon(Icons.person_add, color: Colors.white),
+          onPressed: () => Navigator.pushNamed(context, '/addfriend'),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

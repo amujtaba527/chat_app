@@ -4,6 +4,7 @@ import 'package:chat_app/firebase_options.dart';
 import 'package:chat_app/forgotpassword.dart';
 import 'package:chat_app/login.dart';
 import 'package:chat_app/profile.dart';
+import 'package:chat_app/add_friend_screen.dart';
 import 'package:chat_app/signup.dart';
 import 'package:chat_app/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         '/chatscreen': (context) => const ChatsScreen(),
         '/conversation': (context) => const ConversationScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/addfriend': (context) => const AddFriendScreen(),
         '/forgotpassword': (context) => const ForgotPasswordScreen(),
       },
     );
