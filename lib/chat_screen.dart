@@ -93,8 +93,8 @@ class ChatsScreen extends StatelessWidget {
                             },
                             leading: const CircleAvatar(
                               backgroundImage: AssetImage(
-                        'assets/profile_pic.jpg',
-                      ),
+                                'assets/profile_pic.jpg',
+                              ),
                             ),
                             title:
                                 Text(otherUser['name'] ?? otherUser['email']),
@@ -149,8 +149,23 @@ class ChatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => GroupChatsListScreen(),
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  GroupChatsListScreen(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
+                            const curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
+
+                            return SlideTransition(
+                                position: offsetAnimation, child: child);
+                          },
                         ),
                       );
                     },
