@@ -12,17 +12,6 @@ class GroupChatsListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Group Chats'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const CreateGroupScreen(),
-              ),
-            ),
-          ),
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -42,10 +31,7 @@ class GroupChatsListScreen extends StatelessWidget {
               return ListTile(
                 title: Text(group['name']),
                 subtitle: Text(
-                  group['isAnonymous'] 
-                      ? 'Anonymous Group' 
-                      : 'Group Chat'
-                ),
+                    group['isAnonymous'] ? 'Anonymous Group' : 'Group Chat'),
                 onTap: () {
                   Navigator.push(
                     context,
