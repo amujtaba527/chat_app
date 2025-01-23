@@ -36,12 +36,27 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
 
   Future<void> acceptFriendRequest(String requestId) async {
     try {
-      await _firestore.collection('friendRequests')
+      await _firestore
+          .collection('friendRequests')
           .doc(requestId)
           .update({'status': 'accepted'});
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Friend request accepted!')),
       );
+      final requestDoc = await _firestore.collection('friendRequests').doc(requestId).get();
+      await _firestore.collection('chats').add({
+        'type': 'direct',
+        'participants': [requestDoc['senderId'], requestDoc['receiverId']],
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastMessage': '',
+        'lastMessageTime': FieldValue.serverTimestamp()
+      });
+
+      // Update request status
+      await _firestore
+          .collection('friendRequests')
+          .doc(requestId)
+          .update({'status': 'accepted'});
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -64,7 +79,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search users by email...',
+                hintText: 'Search users by email',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -92,15 +107,18 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                         StreamBuilder<QuerySnapshot>(
                           stream: _firestore
                               .collection('users')
-                              .where('email', isGreaterThanOrEqualTo: _searchQuery)
+                              .where('email',
+                                  isGreaterThanOrEqualTo: _searchQuery)
                               .where('email', isLessThan: _searchQuery + 'z')
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
-                              return Center(child: Text('Error: ${snapshot.error}'));
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
                             }
                             if (!snapshot.hasData) {
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             }
 
                             final users = snapshot.data!.docs;
@@ -121,8 +139,14 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                   ),
                                   title: Text(userEmail),
                                   trailing: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                    ),
                                     onPressed: () => sendFriendRequest(userId),
-                                    child: const Text('Add Friend'),
+                                    child: const Text('Add Friend',
+                                        style: TextStyle(color: Colors.white),
+                                        ),
+                                  
                                   ),
                                 );
                               },
@@ -133,15 +157,18 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                         StreamBuilder<QuerySnapshot>(
                           stream: _firestore
                               .collection('friendRequests')
-                              .where('receiverId', isEqualTo: _auth.currentUser!.uid)
+                              .where('receiverId',
+                                  isEqualTo: _auth.currentUser!.uid)
                               .where('status', isEqualTo: 'pending')
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
-                              return Center(child: Text('Error: ${snapshot.error}'));
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
                             }
                             if (!snapshot.hasData) {
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             }
 
                             final requests = snapshot.data!.docs;
@@ -156,16 +183,20 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                     child: Icon(Icons.person),
                                   ),
                                   title: Text(senderEmail),
-                                  subtitle: const Text('Sent you a friend request'),
+                                  subtitle:
+                                      const Text('Sent you a friend request'),
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        icon: const Icon(Icons.check, color: Colors.green),
-                                        onPressed: () => acceptFriendRequest(request.id),
+                                        icon: const Icon(Icons.check,
+                                            color: Colors.green),
+                                        onPressed: () =>
+                                            acceptFriendRequest(request.id),
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.close, color: Colors.red),
+                                        icon: const Icon(Icons.close,
+                                            color: Colors.red),
                                         onPressed: () {},
                                       ),
                                     ],

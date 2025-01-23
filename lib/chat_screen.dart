@@ -1,3 +1,6 @@
+import 'package:chat_app/groupchatlist.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatsScreen extends StatelessWidget {
@@ -5,6 +8,8 @@ class ChatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -48,21 +53,56 @@ class ChatsScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: 18,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/conversation');
-                    },
-                    leading: const CircleAvatar(
-                      backgroundImage: AssetImage(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('chats')
+                    .where('participants', arrayContains: user!.uid)
+                    .where('type', isEqualTo: 'direct')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final chats = snapshot.data!.docs;
+                  return ListView.builder(
+                    itemCount: chats.length,
+                    itemBuilder: (context, index) {
+                      // Find the other participant's ID
+                      final otherParticipantId = chats[index]['participants']
+                          .firstWhere((id) => id != user.uid);
+
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(otherParticipantId)
+                            .get(),
+                        builder: (context, userSnapshot) {
+                          if (!userSnapshot.hasData) {
+                            return const SizedBox.shrink();
+                          }
+
+                          final otherUser = userSnapshot.data!;
+                          return ListTile(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/conversation',
+                                  arguments: {
+                                    'chatId': chats[index].id,
+                                    'userId': otherParticipantId
+                                  });
+                            },
+                            leading: const CircleAvatar(
+                              backgroundImage: AssetImage(
                         'assets/profile_pic.jpg',
                       ),
-                    ),
-                    title: const Text('MAD'),
-                    subtitle: const Text('Have you spoken to the...'),
-                    trailing: const Text('10 minutes ago'),
+                            ),
+                            title:
+                                Text(otherUser['name'] ?? otherUser['email']),
+                            subtitle: Text(chats[index]['lastMessage'] ?? ''),
+                          );
+                        },
+                      );
+                    },
                   );
                 },
               ),
@@ -104,6 +144,17 @@ class ChatsScreen extends StatelessWidget {
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.message),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GroupChatsListScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.group_outlined),
                   ),
                   IconButton(
                     onPressed: () {

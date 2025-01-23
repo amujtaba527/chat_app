@@ -36,9 +36,8 @@ class ProfileScreen extends StatelessWidget {
             // Profile Picture
             CircleAvatar(
               radius: 50,
-              backgroundImage: user?.photoURL != null
-                  ? NetworkImage(user!.photoURL!)
-                  : null,
+              backgroundImage:
+                  user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
               child: user?.photoURL == null
                   ? const Icon(Icons.person, size: 50)
                   : null,
@@ -62,34 +61,13 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            // Profile Options
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Edit Profile'),
-              onTap: () {
-                // Add edit profile functionality
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Notifications'),
-              onTap: () {
-                // Add notifications settings
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.security),
-              title: const Text('Privacy and Security'),
-              onTap: () {
-                // Add privacy settings
-              },
-            ),
+
             const Spacer(),
             // Logout Button
             ElevatedButton(
               onPressed: () => _signOut(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.black,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -97,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               child: const Text(
                 'Logout',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
           ],
